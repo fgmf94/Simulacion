@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/Simulacion2.c 
+../src/Simulacion.c 
 
 OBJS += \
-./src/Simulacion2.o 
+./src/Simulacion.o 
 
 C_DEPS += \
-./src/Simulacion2.d 
+./src/Simulacion.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
