@@ -11,13 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Resto{
-	int rnsn;
-	int rnsv;
-};
-
-int tpll, t, tf, tps, nsn, nsv, ntn, ntv, stlln, stllv, stsn, stsv, varN, varV, rnsv, rnsn, j, sn, sv, c, finalizo;
-struct Resto restos;
+int tpll, t, tf, tps, nsn, nsv, ntn, ntv, stlln, stllv, stsn, stsv, varN, varV, rnsv, rnsn, j, sn, sv, c, finalizo, ia;
 
 int main(void) {
 
@@ -43,37 +37,35 @@ void realizarSimulacionAnual(int varV, int varN){
 }
 
 void realizarSimulacionDiaria(){
-	tpll = 0, t = 0, tf = 36000, tps = 40000, nsn = 0, nsv = 0, ntn = 0, ntv= 0, stlln = 0, stllv = 0, stsn = 0, stsv = 0;
+	tpll = 0, t = 0, tf = 36000, tps = 400000, nsn = 0, nsv = 0, ntn = 0, ntv= 0, stlln = 0, stllv = 0, stsn = 0, stsv = 0;
 	ramas();
 }
 
-int calculoProximaSalida(){
-	int tps;
+void calculoProximaSalida(){
 
 	if(div(t,120).rem == 0){
-		return t;
+		tps = t;
 	}
 
 	tps = (div(t,120).quot + 1) * 120;
-	return tps;
 }
 
 int calcularIA(){
 
-	int ia;
+	int iac;
 
 	if(t <= 10800){
 		//De 9 AM a 12 PM
-		ia = random_number(2,10);
+		iac = random_number(1,7);
 	} else if (t > 10800 && t <= 21600){
 		//De 12 PM a 3 PM
-		ia = random_number(30,120);
+		iac = random_number(10,30);
 	} else if (t <= 36000){
 		//De 3 PM a 7 PM
-		ia = random_number(10,20);
+		iac = random_number(5,15);
 	}
 
-	return ia;
+	return iac;
 }
 
 int random_number(int min_num, int max_num){
@@ -106,9 +98,9 @@ int cambioCola(){
 void ramas(){
 	if (tpll <= tps)
 	{
-		// Evento llegada
+		//Evento llegada
 		t = tpll;
-		int ia = calcularIA();
+		ia = calcularIA();
 		tpll = t + ia;
 		int random = random_number(1,100);
 		if(random <= 80){
@@ -130,9 +122,9 @@ void ramas(){
 			}
 		}
 
-		if(tps >= 40000){
+		if(tps >= 400000){
 			//Genera una salida
-			tps = calculoProximaSalida(t);
+			calculoProximaSalida();
 		}
 		else
 		{
@@ -144,8 +136,6 @@ void ramas(){
 		//Evento salida
 		t = tps;
 		algoritmoResta();
-		rnsv = restos.rnsv;
-		rnsn = restos.rnsn;
 		nsv = nsv - rnsv;
 		nsn = nsn - rnsn;
 		ntn = ntn + rnsn;
@@ -153,32 +143,154 @@ void ramas(){
 		stsn = stsn + rnsn*t;
 		stsv = stsv + rnsv*t;
 		if(nsv + nsn >= 1){
-			calculoProximaSalida();
+			tps = tps + 120;
 		} else {
-			tps = 40000;
+			tps = 400000;
 		}
 	}
 
 	//Impresion de vector de estado
 
-	printf("Vector de estado:\n");
-	printf("nsn = %d, nsv = %d", nsn, nsv);
+	printf("Vector de estado: \n");
+	printf("nsn = %d, nsv = %d, t = %d, tps = %d, tpll = %d, ia = %d", nsn, nsv, t, tps, tpll, ia);
 	printf("\n \n");
 
 	//Finalizó simulación?
-	if(t <= tf){
+	if(t <= tf)
+	{
 		ramas();
-	}else{
-		if(nsn+nsv >= 1){
+	}
+	else
+	{
+		if(nsn+nsv >= 1)
+		{
 			//Rutina de vaciamiento
-			tpll = 40000;
+			tpll = 500000;
 			ramas();
-		}else{
+		}
+		else
+		{
 			calculoEImpresionResultados();
 		}
 	}
 }
 
+void algoritmoResta(){
+	sn = nsn;
+	sv = nsv;
+	c = 0;
+	finalizo = 0;
+	rnsn = 0;
+	rnsv = 0;
+
+	int corte = iteracionRestar();
+
+	while(corte == 1){
+		corte = iteracionRestar();
+	}
+}
+
+int iteracionRestar(){
+	if(sn == 0 && sv == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		if(c < 24)
+		{
+			if(sv > 0)
+			{
+				if(sv >= varV)
+				{
+					if(c + varV <= 24)
+					{
+						sv = sv - varV;
+						c = c + varV;
+						rnsv = rnsv + varV;
+					}
+					else
+					{
+						int e;
+						e = c + varV - 24;
+						sv = sv - (varV - e);
+						c = c + (varV - e);
+						rnsv = rnsv + (varV - e);
+					}
+				}
+				else
+				{
+					if(sv + c <= 24)
+					{
+						c = c + sv;
+						rnsv = rnsv + sv;
+						sv = 0;
+					}
+					else
+					{
+						int e;
+						e = c + sv - 24;
+						c = c + (sv - e);
+						rnsv = rnsv + (sv - e);
+						sv = e;
+					}
+				}
+			}
+
+			if (c < 24)
+			{
+				if(sn > 0)
+				{
+					if(sn >= varN)
+					{
+						if(c + varN <= 24)
+						{
+							sn = sn - varN;
+							c = c + varN;
+							rnsn = rnsn + varN;
+						}
+						else
+						{
+							int e;
+							e = c + varN - 24;
+							sn = sn - (varN - e);
+							c = c + (varN - e);
+							rnsn = rnsn + (varN - e);
+						}
+					}
+					else
+					{
+						if(sn + c <= 24)
+						{
+							c = c + sn;
+							rnsn = rnsn + sn;
+							sn = 0;
+						}
+						else
+						{
+							int e;
+							e = c + sn - 24;
+							c = c + (sn - e);
+							rnsn = rnsn + (sn - e);
+							sn = e;
+						}
+					}
+				}
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
+
+/*
 void algoritmoResta(){
 
 	sn=0,sv=0,c=0,finalizo=0;
@@ -235,21 +347,17 @@ int volverArriba(){
 	}
 	return finalizo;
 }
+*/
 
 void calculoEImpresionResultados(){
 
-	float pten = (stsn-stlln) / ntn;
-	float ptev = (stsv-stllv) / ntv;
-	printf("El PTEN es: %f", pten);
-	printf("El PTEV es: %f", ptev);
-	float porcentajeEsperaVip = ptev / pten;
+	float pten = (float) (stsn-stlln) / (float) ntn;
+	float ptev = (float) (stsv-stllv) / (float) ntv;
+	printf("El PTEN es: %f \n", pten);
+	printf("El PTEV es: %f \n", ptev);
+	float porcentajeEsperaVip = (float) ptev / (float) pten;
 	printf("Relacion tiempo de espera VIP/Normal: %f", porcentajeEsperaVip);
 
 }
-
-
-
-
-
 
 
