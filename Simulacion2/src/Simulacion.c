@@ -11,10 +11,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int tpll,t , tf , tps , nsn, nsv, ntn, ntv, stlln , stllv, stsn, stsv,varN,varV ;
+int tpll, t, tf, tps, nsn, nsv, ntn, ntv, stlln, stllv, stsn, stsv, varN, varV, rnsv, rnsn;
 
 int main(void) {
-
 
 	/*
 	printf("Ingrese el valor de la variable de control V:");
@@ -23,13 +22,23 @@ int main(void) {
 	scanf("%d", &varN);
 	*/
 
-	//realizarSimulacionAnual(varV, varN);
+	//realizarSimulacionDiaria();
 
 	/*Tests
+
+	1-
 
 	int tps = calculoProximaSalida(241);
 	printf("%d\n", tps);
 	*/
+
+	int i = 0;
+	while(i<1000){
+		int ran = random_number(2,10,i);
+		printf("%d\n",ran);
+		i++;
+	}
+
 
 	return EXIT_SUCCESS;
 }
@@ -43,13 +52,13 @@ void realizarSimulacionAnual(int varV, int varN){
 	}
 }
 
-void realizarSimulacionDiaria(int varV, int varN){
+void realizarSimulacionDiaria(){
 
 	tpll = 0, t = 0, tf = 36000, tps = 40000, nsn = 0, nsv = 0, ntn = 0, ntv= 0, stlln = 0, stllv = 0, stsn = 0, stsv = 0;
 
 	ramas();
 
-	if(t<= tf){
+	if(t <= tf){
 		ramas();
 	}else{
 		if(nsn+nsv >= 1){
@@ -60,7 +69,7 @@ void realizarSimulacionDiaria(int varV, int varN){
 	}
 }
 
-int calculoProximaSalida(int t){
+int calculoProximaSalida(){
 	int tps;
 
 	if(div(t,120).rem == 0){
@@ -73,14 +82,23 @@ int calculoProximaSalida(int t){
 
 int calcularIA(){
 
-	int ia = random_number(2,10);
+	int ia;
 
-	//printf("%d\n",ia);
+	if(t <= 10800){
+		//De 9 AM a 12 PM
+		ia = random_number(2,10);
+	} else if (t > 10800 && t <= 21600){
+		//De 12 PM a 3 PM
+		ia = random_number(30,120);
+	} else if (t <= 36000){
+		//De 3 PM a 7 PM
+		ia = random_number(10,20);
+	}
 
 	return ia;
 }
 
-int random_number(int min_num, int max_num){
+int random_number(int min_num, int max_num, int i){
 	int result=0,low_num=0,hi_num=0;
 	if(min_num<max_num)
 	{
@@ -90,13 +108,13 @@ int random_number(int min_num, int max_num){
 		low_num=max_num+1;// this is done to include max_num in output.
 		hi_num=min_num;
 	}
-	srand(time(NULL));
+	srand(i*time(0));
 	result = (rand()%(hi_num-low_num))+low_num;
 	return result;
 }
 
 //Prototipo de funcion
-int cambioCola(int nsn,int nsv,int varV,int varN){
+int cambioCola(){
 	if(div(nsv,varV).quot<= div(nsn,varN).quot){
 		return 0;
 	}
@@ -122,7 +140,7 @@ void ramas(){
 				//No genera salida
 			}
 
-			float random = random_number(0,1);
+			float random; //= random_number(0,1);
 			if(random <= 0.8 ){
 				//Persona normal
 				//Entra cola normal
@@ -131,26 +149,44 @@ void ramas(){
 
 			}else{
 				//Persona VIP
-				int colaNormal = cambioCola(nsv,nsn,varV,varN);
+				int colaNormal = cambioCola();
 				if(colaNormal==0){
-					nsv+=1;
-					stllv+=t;
+					nsv += 1;
+					stllv += t;
 				}else{
-					nsn+=1;
-					stlln+=t;
+					nsn += 1;
+					stlln += t;
 				}
 			}
 		}
 		else
 		{
 			// Evento salida
+			algoritmoResta();
+			nsv = nsv - rnsv;
+			nsn = nsn - rnsn;
+			ntn = ntn + rnsn;
+			ntv = ntv + rnsv;
+			stsn = stsn + rnsn*t;
+			stsv = stsv + rnsv*t;
+
+			if(nsv+nsn >= 1){
+
+			} else {
+
+			}
 		}
+}
+
+void algoritmoResta(){
+
 }
 
 void calculoEImpresionResultados(){
 
 	//printf("%f","El PTEN es:"((stsn-stlln)/ntn));
 	//printf("%f","El PTEV es:"((stsv-stllv)/ntv));
+
 }
 
 
