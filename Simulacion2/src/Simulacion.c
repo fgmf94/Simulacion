@@ -43,7 +43,8 @@ void realizarSimulacionVariosDias(int dias){
 
 	float ptent = (float) spten / (float) dias;
 	float ptevt = (float) sptev / (float) dias;
-	printf("\nPTEN promedio: %f \n", ptent);
+	printf("\nVariable de control V: %d, Variable de control N: %d\n", varV, varN);
+	printf("PTEN promedio: %f \n", ptent);
 	printf("PTEV promedio: %f \n", ptevt);
 	float porcentajeEsperaVipTot = (float) ptevt / (float) ptent;
 	printf("Relacion tiempo de espera VIP/Normal Total: %f \n", porcentajeEsperaVipTot);
@@ -303,65 +304,6 @@ int iteracionRestar(){
 	return 1;
 }
 
-/*
-void algoritmoResta(){
-
-	sn=0,sv=0,c=0,finalizo=0;
-	restos.rnsn=0;
-	restos.rnsn =0;
-
-	while(finalizo !=1){
-		finalizo = volverArriba();
-	}
-
-}
-
-int restar(int cola, int distrib){
-		int resto=0,e=0;
-
-		if(cola >0){
-				if(cola >= distrib){
-					if(c+distrib<= 24){
-						cola = cola-distrib;
-						c = c + distrib;
-						resto = resto + distrib;
-					}else{
-						e= (c+distrib)-24;
-						cola=cola -(distrib-e);
-						c= c + (distrib-e);
-						resto = resto + (distrib-e);
-					}
-				}else{
-					if(cola + c <= 24){
-						c = c + cola;
-						resto = resto + cola;
-						cola=0;
-					}else{
-						e=(c+cola)-24;
-						c=c+(cola - e);
-						resto = resto + (cola-e);
-					}
-				}
-			}
-	return resto;
-}
-
-int volverArriba(){
-	int finalizo=0;
-
-	if(sn==0 && sv==0){
-		finalizo = 1;
-	}else{
-		if(c <= 24){
-			restos.rnsv = restar(sv,varV);
-			restos.rnsn = restar(sn,varN);
-			//volver arriba
-		}else{finalizo=1;}
-	}
-	return finalizo;
-}
-*/
-
 void calculoEImpresionResultados(){
 
 	float pten = (float) (stsn-stlln) / (float) ntn;
@@ -369,6 +311,7 @@ void calculoEImpresionResultados(){
 
 	spten = spten + pten;
 	sptev = sptev + ptev;
+
 
 	printf("\nPTEN: %f \n", pten);
 	printf("PTEV: %f \n", ptev);
