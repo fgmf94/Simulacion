@@ -12,28 +12,41 @@
 #include <stdlib.h>
 
 int tpll, t, tf, tps, nsn, nsv, ntn, ntv, stlln, stllv, stsn, stsv, varN, varV, rnsv, rnsn, j, sn, sv, c, finalizo, ia;
+float spten, sptev;
 
 int main(void) {
 
+	int dias;
 
 	printf("Ingrese el valor de la variable de control V:");
 	scanf("%d", &varV);
+
 	printf("Ingrese el valor de la variable de control N:");
 	scanf("%d", &varN);
 
-	realizarSimulacionDiaria();
+	printf("Ingrese la cantidad de dias de la simulacion:");
+	scanf("%d", &dias);
+
+	realizarSimulacionVariosDias(dias);
 
 	return EXIT_SUCCESS;
 }
 
-void realizarSimulacionAnual(int varV, int varN){
-
+void realizarSimulacionVariosDias(int dias){
 	int i = 0;
-
-	while(i < 365){
-		realizarSimulacionDiaria(varV, varN);
+	while(i < dias)
+	{
+		printf("\nDia %d:", i);
+		realizarSimulacionDiaria();
+		i++;
 	}
 
+	float ptent = (float) spten / (float) dias;
+	float ptevt = (float) sptev / (float) dias;
+	printf("\nPTEN promedio: %f \n", ptent);
+	printf("PTEV promedio: %f \n", ptevt);
+	float porcentajeEsperaVipTot = (float) ptevt / (float) ptent;
+	printf("Relacion tiempo de espera VIP/Normal Total: %f \n", porcentajeEsperaVipTot);
 }
 
 void realizarSimulacionDiaria(){
@@ -151,9 +164,9 @@ void ramas(){
 
 	//Impresion de vector de estado
 
-	printf("Vector de estado: \n");
-	printf("nsn = %d, nsv = %d, t = %d, tps = %d, tpll = %d, ia = %d", nsn, nsv, t, tps, tpll, ia);
-	printf("\n \n");
+	//printf("Vector de estado: \n");
+	//printf("nsn = %d, nsv = %d, t = %d, tps = %d, tpll = %d, ia = %d", nsn, nsv, t, tps, tpll, ia);
+	//printf("\n \n");
 
 	//Finalizó simulación?
 	if(t <= tf)
@@ -353,10 +366,14 @@ void calculoEImpresionResultados(){
 
 	float pten = (float) (stsn-stlln) / (float) ntn;
 	float ptev = (float) (stsv-stllv) / (float) ntv;
-	printf("El PTEN es: %f \n", pten);
-	printf("El PTEV es: %f \n", ptev);
+
+	spten = spten + pten;
+	sptev = sptev + ptev;
+
+	printf("\nPTEN: %f \n", pten);
+	printf("PTEV: %f \n", ptev);
 	float porcentajeEsperaVip = (float) ptev / (float) pten;
-	printf("Relacion tiempo de espera VIP/Normal: %f", porcentajeEsperaVip);
+	printf("Relacion tiempo de espera VIP/Normal: %f \n", porcentajeEsperaVip);
 
 }
 
